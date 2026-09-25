@@ -16,3 +16,15 @@ PHP 8 + MySQL/MariaDB starter application for managing books, members, issue/ret
 
 ## Modules
 Login, dashboard, books, members, issue/return, overdue/fine calculation.
+
+## Main URLs
+- login.php — authentication
+- dashboard.php — summary dashboard
+- books.php — book inventory
+- members.php — members
+- issue.php — issue and return
+- search.php — book search
+- reports.php — circulation and overdue reports
+
+## Next production hardening
+Add CSRF tokens, audit logging, fine-payment records, reservation/renewal modules, pagination, edit/delete screens, and automated tests before production deployment.

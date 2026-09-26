@@ -1,57 +1,11 @@
 <?php
-$pageTitle='Dashboard';
-require __DIR__.'/config/database.php';
-require __DIR__.'/includes/header.php';
-
-$stats=[
- 'Book Copies'=>(int)$pdo->query("SELECT COALESCE(SUM(total_copies),0) FROM books")->fetchColumn(),
- 'Available'=>(int)$pdo->query("SELECT COALESCE(SUM(available_copies),0) FROM books")->fetchColumn(),
- 'Members'=>(int)$pdo->query("SELECT COUNT(*) FROM members WHERE status='active'")->fetchColumn(),
- 'Issued'=>(int)$pdo->query("SELECT COUNT(*) FROM loans WHERE status='issued'")->fetchColumn(),
- 'Overdue'=>(int)$pdo->query("SELECT COUNT(*) FROM loans WHERE status='issued' AND due_date<CURDATE()")->fetchColumn()
-];
-?>
+$pageTitle='Dashboard'; require __DIR__.'/config/database.php'; require __DIR__.'/includes/header.php';
+$stats=['Book Titles'=>(int)$pdo->query("SELECT COUNT(*) FROM books WHERE status='active'")->fetchColumn(),'Total Copies'=>(int)$pdo->query("SELECT COALESCE(SUM(total_copies),0) FROM books WHERE status='active'")->fetchColumn(),'Available Copies'=>(int)$pdo->query("SELECT COALESCE(SUM(available_copies),0) FROM books WHERE status='active'")->fetchColumn(),'Active Members'=>(int)$pdo->query("SELECT COUNT(*) FROM members WHERE status='active'")->fetchColumn(),'Issued Books'=>(int)$pdo->query("SELECT COUNT(*) FROM loans WHERE status='issued'")->fetchColumn(),'Overdue Books'=>(int)$pdo->query("SELECT COUNT(*) FROM loans WHERE status='issued' AND due_date<CURDATE()")->fetchColumn()];
+$recent=$pdo->query("SELECT l.issue_date,l.due_date,b.title,m.member_code,m.name FROM loans l JOIN books b ON b.id=l.book_id JOIN members m ON m.id=l.member_id WHERE l.status='issued' ORDER BY l.issue_date DESC LIMIT 10")->fetchAll(); ?>
 <h2 class="mb-4">Library Dashboard</h2>
-
-<div class="row g-3">
-<?php foreach($stats as $k=>$v): ?>
-<div class="col-md-3 col-lg">
-  <div class="card shadow-sm h-100"><div class="card-body">
-    <div class="text-muted"><?=h($k)?></div><div class="fs-2 fw-bold"><?=$v?></div>
-  </div></div>
-</div>
-<?php endforeach; ?>
-</div>
-
-<div class="row g-3 mt-2">
-  <div class="col-lg-7">
-    <div class="card shadow-sm">
-      <div class="card-header fw-bold">Quick Book Search</div>
-      <div class="card-body">
-        <form action="search.php" method="get" class="input-group">
-          <input class="form-control" name="q" placeholder="Search by title, ISBN, accession number or author" aria-label="Search books">
-          <button class="btn btn-primary" type="submit">Search</button>
-        </form>
-        <div class="mt-3"><a href="search.php" class="btn btn-outline-primary btn-sm">Advanced Search</a></div>
-      </div>
-    </div>
-  </div>
-  <div class="col-lg-5">
-    <div class="card shadow-sm h-100">
-      <div class="card-header fw-bold">Reports</div>
-      <div class="card-body">
-        <p class="text-muted">View current loans and overdue books.</p>
-        <a class="btn btn-dark" href="reports.php">Open Reports</a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="mt-4">
-<a class="btn btn-primary me-2" href="books.php">Books</a>
-<a class="btn btn-success me-2" href="members.php">Members</a>
-<a class="btn btn-warning me-2" href="issue.php">Issue / Return</a>
-<a class="btn btn-dark" href="reports.php">Reports</a>
-</div>
-
+<div class="row g-3"><?php foreach($stats as $k=>$v): ?><div class="col-sm-6 col-lg-2"><div class="card shadow-sm h-100"><div class="card-body"><div class="text-muted small"><?=h($k)?></div><div class="fs-3 fw-bold"><?=$v?></div></div></div></div><?php endforeach; ?></div>
+<div class="row g-3 mt-2"><div class="col-lg-8"><div class="card shadow-sm"><div class="card-header fw-bold">Check Book Availability</div><div class="card-body"><form action="search.php" method="get" class="input-group"><input class="form-control" name="q" placeholder="Search title, ISBN, accession number or author"><button class="btn btn-primary">Search Availability</button></form><p class="text-muted small mt-2 mb-0">Results show total, issued, available copies, shelf and availability status.</p></div></div></div>
+<div class="col-lg-4"><div class="card shadow-sm h-100"><div class="card-header fw-bold">Reports Center</div><div class="card-body d-grid gap-2"><a class="btn btn-dark" href="reports.php">Open Complete Reports</a><a class="btn btn-outline-primary" href="search.php">Book Availability Search</a></div></div></div></div>
+<div class="card shadow-sm mt-4"><div class="card-header fw-bold">Recent Issued Books</div><div class="table-responsive"><table class="table table-striped mb-0"><thead><tr><th>Member</th><th>Book</th><th>Issue Date</th><th>Due Date</th></tr></thead><tbody><?php foreach($recent as $x): ?><tr><td><?=h($x['member_code'].' - '.$x['name'])?></td><td><?=h($x['title'])?></td><td><?=h($x['issue_date'])?></td><td><?=h($x['due_date'])?></td></tr><?php endforeach; ?><?php if(!$recent): ?><tr><td colspan="4" class="text-center text-muted">No issued books.</td></tr><?php endif; ?></tbody></table></div></div>
+<div class="mt-4"><a class="btn btn-primary me-2" href="books.php">Books</a><a class="btn btn-success me-2" href="members.php">Members</a><a class="btn btn-warning me-2" href="issue.php">Issue / Return</a><a class="btn btn-dark" href="reports.php">Reports</a></div>
 <?php require __DIR__.'/includes/footer.php';

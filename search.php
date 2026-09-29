@@ -49,7 +49,7 @@ if($q!==''){
   <h1>Search Library Books</h1>
   <p>Search the library catalogue and check availability without logging in.</p>
   <form action="search.php" method="get" class="search-box">
-    <input name="q" value="<?=h($q)?>" placeholder="Search by title, author, ISBN, accession number or category" aria-label="Search books" autofocus>
+    <input name="q" value="<?=htmlspecialchars($q, ENT_QUOTES, 'UTF-8')?>" placeholder="Search by title, author, ISBN, accession number or category" aria-label="Search books" autofocus>
     <button type="submit">🔎 Search</button>
   </form>
   <div class="hint">Leave the search box empty to view all available catalogue records.</div>
@@ -59,7 +59,7 @@ if($q!==''){
 <div class="result-card">
   <div class="result-head">
     <h2><?= $q!=='' ? 'Search Results' : 'Library Catalogue' ?></h2>
-    <span class="count"><?=count($rows)?> book<?=count($rows)!==1?'s':''?></span>
+    <span class="count"><?=count($rows, ENT_QUOTES, 'UTF-8')?> book<?=count($rows)!==1?'s':''?></span>
   </div>
 
   <div class="table-wrap">
@@ -81,15 +81,15 @@ if($q!==''){
       <tbody>
 <?php foreach($rows as $b): $available=(int)$b['available_copies']; ?>
         <tr>
-          <td><?=h($b['accession_no'])?></td>
-          <td class="book-title"><?=h($b['title'])?></td>
-          <td><?=h($b['author']??'—')?></td>
-          <td><?=h($b['category']??'—')?></td>
-          <td><?=h($b['isbn']??'—')?></td>
+          <td><?=htmlspecialchars($b['accession_no'], ENT_QUOTES, 'UTF-8')?></td>
+          <td class="book-title"><?=htmlspecialchars($b['title'], ENT_QUOTES, 'UTF-8')?></td>
+          <td><?=htmlspecialchars($b['author']??'—', ENT_QUOTES, 'UTF-8')?></td>
+          <td><?=htmlspecialchars($b['category']??'—', ENT_QUOTES, 'UTF-8')?></td>
+          <td><?=htmlspecialchars($b['isbn']??'—', ENT_QUOTES, 'UTF-8')?></td>
           <td><?=$b['total_copies']?></td>
           <td><?=$b['issued_copies']?></td>
           <td><strong><?=$available?></strong></td>
-          <td><?=h($b['shelf_no']??'—')?></td>
+          <td><?=htmlspecialchars($b['shelf_no']??'—', ENT_QUOTES, 'UTF-8')?></td>
           <td>
 <?php if($available>0): ?>
             <span class="availability available">● Available</span>

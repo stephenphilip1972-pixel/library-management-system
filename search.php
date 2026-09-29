@@ -59,7 +59,7 @@ if($q!==''){
 <div class="result-card">
   <div class="result-head">
     <h2><?= $q!=='' ? 'Search Results' : 'Library Catalogue' ?></h2>
-    <span class="count"><?=count($rows, ENT_QUOTES, 'UTF-8')?> book<?=count($rows)!==1?'s':''?></span>
+    <span class="count"><?=count($rows)?> book<?=count($rows)!==1?'s':''?></span>
   </div>
 
   <div class="table-wrap">
